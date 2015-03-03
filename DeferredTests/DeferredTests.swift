@@ -12,20 +12,9 @@ import Deferred
 
 class DeferredTests: XCTestCase {
 
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-
     func testPromiseResolve() {
-
         let deferred = Deferred<String>()
-        var val: String!
+        var val = "Wrong String"
 
         deferred.then({ str in
             val = str
@@ -33,29 +22,44 @@ class DeferredTests: XCTestCase {
                 println(error)
         })
 
-        deferred.resolve("String")
-
-        XCTAssert(val == "String", "Resolve Failed")
-
+        deferred.resolve("Right String")
+        XCTAssert(val == "Right String", "Resolve Failed")
     }
 
     func testPromiseReject() {
-        let errorDomain = "SomeDomain"
-        let errorCode = 0
-
         let deferred = Deferred<String>()
-        var err: NSError!
+        var error: NSError = NSError()
 
-        deferred.then({ str -> () in
-
-            }, { error in
-                err = error
+        deferred.then({ str -> () in }, { err in
+            error = err
         })
 
-        deferred.reject(NSError(domain: errorDomain, code: errorCode, userInfo: nil))
-        let testAgainst = NSError(domain: errorDomain, code: errorCode, userInfo: nil)
-        
-        XCTAssert(err == testAgainst, "Reject Failed")
+        deferred.reject(exampleError())
+        XCTAssert(error == exampleError(), "Reject Failed")
     }
-    
+
+    func testImmediateResolve() {
+        var val = "Wrong String"
+
+        Deferred<String>(value: "Right String").then { str in
+            val = str
+        }
+
+        XCTAssert(val == "Right String", "Immediate Resolved Failed")
+    }
+
+    func testImmediateReject() {
+        var error: NSError = NSError()
+        let deferred = Deferred<String>(error: exampleError())
+
+        deferred.then({ str -> () in }, { err in
+            error = err
+        })
+
+        XCTAssert(error == exampleError(), "Immediate Reject Failed")
+    }
+
+    func exampleError() -> NSError {
+        return NSError(domain: "Some Domain", code: 0, userInfo: nil)
+    }
 }
