@@ -1,3 +1,3 @@
 # Deferred
 
-Simple, straightforward, A+ conforming promise library written in Swift.
+Simple, straightforward, promise library written in Swift.
