@@ -43,20 +43,32 @@ public final class Deferred<T> {
         self.reject(error)
     }
 
-    /** Appends to `pending` a `Then<T, U>` object containing the given `onFulfilled` and (optional) `onRejected` blocks. */
+    /** Appends to `pending` a `Then<T, U>` object containing the given `onFulfilled` and (optional) `onRejected` blocks, or calls onFulfilled/onRejected if the promise is already fulfilled or rejected, respectively. */
     public func then<U>(onFulfilled: (T -> U), _ onRejected: RejectedBlock = { error in }) -> Deferred<U> {
 
+        // Chained promise to be returned
         let deferred = Deferred<U>()
 
+        // Curry onFulfilled and onRejected before appending ThenBlock to `pending`
         let _onFulfilled = wrapFulfilledBlock(deferred, onFulfilled: onFulfilled)
         let _onRejected = wrapRejectedBlock(deferred, onRejected: onRejected)
 
+        // Check promise status
         if let value = value {
+
+            // Fulfilled, call onFulfilled immediately
             _onFulfilled(value)
+
         } else if let error = error {
+
+            // Rejected, call onRejected immediately
             _onRejected(error)
+
         } else {
+
+            // Pending, add ThenBlock
             pending.append(ThenBlock(onFulfilled: _onFulfilled, onRejected: _onRejected))
+
         }
 
         return deferred
@@ -64,23 +76,29 @@ public final class Deferred<T> {
 
     /** Resolve the promise, clearing `pending` after calling each `onFulfilled` block with the given `value`. */
     public func resolve(value: T) {
+        // Promise fulfilled, set value
         self.value = value
 
+        // Loop through ThenBlocks, calling each onFulfilled with value
         for thenBlock in pending {
             thenBlock.onFulfilled(value)
         }
 
+        // Clear pending now that promise has been fulfilled
         self.pending = [ThenBlock]()
     }
 
     /** Rejects the promise, clearing `pending` after calling each `onRejected` block with the given `error`. */
     public func reject(error: NSError) {
+        // Promise rejected, set error
         self.error = error
 
+        // Loop through ThenBlocks, calling each onRejected with error
         for thenBlock in pending {
             thenBlock.onRejected(error)
         }
 
+        // Clear pending now that promise has been rejected
         self.pending = [ThenBlock]()
     }
 
