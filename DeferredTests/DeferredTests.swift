@@ -14,52 +14,62 @@ class DeferredTests: XCTestCase {
 
     func testPromiseResolve() {
         let deferred = Deferred<String>()
-        var val = "Wrong String"
 
-        deferred.then({ str in
-            val = str
-            }, { error in
-                println(error)
-        })
+        expectPromise(deferred) { str -> () in
+            XCTAssert(str == "Right String", "Promise resolved with unexpected value")
+        }
 
         deferred.resolve("Right String")
-        XCTAssert(val == "Right String", "Resolve Failed")
+
+        waitForExpectationsWithTimeout(1, handler: nil)
     }
 
     func testPromiseReject() {
         let deferred = Deferred<String>()
-        var error: NSError = NSError()
+        let rejectWith = NSError(domain: "Some Domain", code: 0, userInfo: nil)
 
-        deferred.then({ str -> () in }, { err in
-            error = err
+        expectPromise(deferred, onRejected: { error -> () in
+            XCTAssert(error == rejectWith, "Reject failed")
         })
 
-        deferred.reject(exampleError())
-        XCTAssert(error == exampleError(), "Reject Failed")
+        deferred.reject(rejectWith)
+
+        waitForExpectationsWithTimeout(1, handler: nil)
     }
 
     func testImmediateResolve() {
-        var val = "Wrong String"
+        let resolveWith = "Some String"
 
-        Deferred<String>(value: "Right String").then { str in
-            val = str
+        expectPromise(Deferred<String>(value: resolveWith)) { str -> () in
+            XCTAssert(str == resolveWith, "Immediate Resolved Failed")
         }
 
-        XCTAssert(val == "Right String", "Immediate Resolved Failed")
+        waitForExpectationsWithTimeout(1, handler: nil)
     }
 
     func testImmediateReject() {
-        var error: NSError = NSError()
-        let deferred = Deferred<String>(error: exampleError())
+        let rejectWith = NSError(domain: "Some Domain", code: 0, userInfo: nil)
 
-        deferred.then({ str -> () in }, { err in
-            error = err
+        expectPromise(Deferred<String>(error: rejectWith), onRejected: { error -> () in
+            XCTAssert(error == rejectWith, "Immediate Reject Failed")
         })
 
-        XCTAssert(error == exampleError(), "Immediate Reject Failed")
+        waitForExpectationsWithTimeout(1, handler: nil)
     }
 
-    func exampleError() -> NSError {
-        return NSError(domain: "Some Domain", code: 0, userInfo: nil)
+    func expectPromise<T>(deferred: Deferred<T>, onFulfilled: T -> () = { t in }, onRejected: NSError -> () = { e in }) {
+        let expectation = expectationWithDescription("Promise should resolve or reject")
+
+        let _onFulfilled = { (value: T) -> () in
+            onFulfilled(value)
+            expectation.fulfill()
+        }
+
+        let _onRejected = { (error: NSError) -> () in
+            onRejected(error)
+            expectation.fulfill()
+        }
+
+        deferred.then(_onFulfilled, _onRejected)
     }
 }
