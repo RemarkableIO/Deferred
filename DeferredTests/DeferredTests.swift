@@ -10,6 +10,24 @@ import UIKit
 import XCTest
 import Deferred
 
+public extension XCTestCase {
+    public func expectPromise<T>(deferred: Deferred<T>, onFulfilled: T -> () = { t in }, onRejected: NSError -> () = { e in }) {
+        let expectation = expectationWithDescription("Promise should resolve or reject")
+
+        let _onFulfilled = { (value: T) -> () in
+            onFulfilled(value)
+            expectation.fulfill()
+        }
+
+        let _onRejected = { (error: NSError) -> () in
+            onRejected(error)
+            expectation.fulfill()
+        }
+
+        deferred.then(_onFulfilled, _onRejected)
+    }
+}
+
 class DeferredTests: XCTestCase {
 
     func testPromiseResolve() {
@@ -55,21 +73,5 @@ class DeferredTests: XCTestCase {
         })
 
         waitForExpectationsWithTimeout(1, handler: nil)
-    }
-
-    func expectPromise<T>(deferred: Deferred<T>, onFulfilled: T -> () = { t in }, onRejected: NSError -> () = { e in }) {
-        let expectation = expectationWithDescription("Promise should resolve or reject")
-
-        let _onFulfilled = { (value: T) -> () in
-            onFulfilled(value)
-            expectation.fulfill()
-        }
-
-        let _onRejected = { (error: NSError) -> () in
-            onRejected(error)
-            expectation.fulfill()
-        }
-
-        deferred.then(_onFulfilled, _onRejected)
     }
 }
