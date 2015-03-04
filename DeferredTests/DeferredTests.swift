@@ -14,12 +14,12 @@ public extension XCTestCase {
     public func expectPromise<T>(deferred: Deferred<T>, onFulfilled: T -> () = { t in }, onRejected: NSError -> () = { e in }) {
         let expectation = expectationWithDescription("Promise should resolve or reject")
 
-        let _onFulfilled = { (value: T) -> () in
+        let _onFulfilled: T -> () = { (value: T) in
             onFulfilled(value)
             expectation.fulfill()
         }
 
-        let _onRejected = { (error: NSError) -> () in
+        let _onRejected: NSError -> () = { (error: NSError) in
             onRejected(error)
             expectation.fulfill()
         }
@@ -33,7 +33,7 @@ class DeferredTests: XCTestCase {
     func testPromiseResolve() {
         let deferred = Deferred<String>()
 
-        expectPromise(deferred) { str -> () in
+        expectPromise(deferred) { str in
             XCTAssert(str == "Right String", "Promise resolved with unexpected value")
         }
 
@@ -46,7 +46,7 @@ class DeferredTests: XCTestCase {
         let deferred = Deferred<String>()
         let rejectWith = NSError(domain: "Some Domain", code: 0, userInfo: nil)
 
-        expectPromise(deferred, onRejected: { error -> () in
+        expectPromise(deferred, onRejected: { error in
             XCTAssert(error == rejectWith, "Reject failed")
         })
 
@@ -58,7 +58,7 @@ class DeferredTests: XCTestCase {
     func testImmediateResolve() {
         let resolveWith = "Some String"
 
-        expectPromise(Deferred<String>(value: resolveWith)) { str -> () in
+        expectPromise(Deferred<String>(value: resolveWith)) { str in
             XCTAssert(str == resolveWith, "Immediate Resolved Failed")
         }
 
@@ -68,7 +68,7 @@ class DeferredTests: XCTestCase {
     func testImmediateReject() {
         let rejectWith = NSError(domain: "Some Domain", code: 0, userInfo: nil)
 
-        expectPromise(Deferred<String>(error: rejectWith), onRejected: { error -> () in
+        expectPromise(Deferred<String>(error: rejectWith), onRejected: { error in
             XCTAssert(error == rejectWith, "Immediate Reject Failed")
         })
 

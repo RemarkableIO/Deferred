@@ -43,8 +43,8 @@ public final class Deferred<T> {
         self.reject(error)
     }
 
-    /** Appends to `pending` a `Then<T, U>` object containing the given `onFulfilled` and (optional) `onRejected` blocks, or calls onFulfilled/onRejected if the promise is already fulfilled or rejected, respectively. */
-    public func then<U>(onFulfilled: (T -> U), _ onRejected: RejectedBlock = { error in }) -> Deferred<U> {
+    /** Appends to `pending` a `Then<T>` object containing the given `onFulfilled` and (optional) `onRejected` blocks, or calls onFulfilled/onRejected if the promise is already fulfilled or rejected, respectively. */
+    public func then<U>(onFulfilled: (T) -> U, _ onRejected: RejectedBlock = { error in }) -> Deferred<U> {
 
         // Chained promise to be returned
         let deferred = Deferred<U>()
