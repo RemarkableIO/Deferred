@@ -43,6 +43,25 @@ public final class Deferred<T> {
         self.reject(error)
     }
 
+    /** Returns a collective promise that resolves with a collection of T when all resolve */
+    public class func combine(promises: [Deferred<T>]) -> Deferred<[T]> {
+        let combined = Deferred<[T]>()
+
+        var collection = [T]()
+
+        for deferred in promises {
+            deferred.then { value -> () in
+                collection += [value]
+
+                if collection.count == promises.count {
+                    combined.resolve(collection)
+                }
+            }
+        }
+
+        return combined
+    }
+
     /** Appends to `pending` a `Then<T>` object containing the given `onFulfilled` and (optional) `onRejected` blocks, or calls onFulfilled/onRejected if the promise is already fulfilled or rejected, respectively. */
     public func then<U>(onFulfilled: (T) -> U, _ onRejected: RejectedBlock = { error in }) -> Deferred<U> {
 

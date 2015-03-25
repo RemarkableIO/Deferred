@@ -74,4 +74,17 @@ class DeferredTests: XCTestCase {
 
         waitForExpectationsWithTimeout(1, handler: nil)
     }
+
+    func testCombinedResolve() {
+
+        let promises = [Int](0..<5).map { Int -> Deferred<String> in
+            return Deferred<String>(value: "Some String")
+        }
+
+        expectPromise(Deferred.combine(promises)) { strings in
+            XCTAssert(strings.count == 5, "Combined Resolve Failed")
+        }
+
+        waitForExpectationsWithTimeout(1, handler: nil)
+    }
 }
