@@ -26,7 +26,7 @@ public final class Deferred<T> {
     private var error: NSError?
 
     /** `ThenBlock` objects whose onFulfilled or onRejected will be called upon `resolve(value: T)` or `reject(error: NSError)`, respectively. */
-    private var pending: [ThenBlock] = [ThenBlock]()
+    internal var pending: [ThenBlock] = [ThenBlock]()
 
     /** Returns an empty (unresolved, unrejected) promise. */
     public required init() { } // Shouldn't be necessary?
@@ -91,6 +91,36 @@ public final class Deferred<T> {
         }
 
         return deferred
+    }
+
+    public func then<U>(onFulfilled: (T) -> Deferred<U>, _ onRejected: RejectedBlock = { error in }) -> Deferred<U> {
+
+        let temp = Deferred<U>()
+
+        let _onFulfilled: T -> () = { value in
+            let next = onFulfilled(value)
+            if let nextValue = next.value {
+                temp.resolve(nextValue)
+            } else if let nextError = next.error {
+                temp.reject(nextError)
+            } else {
+                temp.pending += next.pending
+            }
+        }
+
+        let _onRejected: NSError -> () = { error in
+            temp.reject(error)
+        }
+
+        if let value = value {
+            _onFulfilled(value)
+        } else if let error = error {
+            _onRejected(error)
+        } else {
+            pending += [ThenBlock(onFulfilled: _onFulfilled, onRejected: _onRejected)]
+        }
+
+        return temp
     }
 
     /** Resolve the promise, clearing `pending` after calling each `onFulfilled` block with the given `value`. */
