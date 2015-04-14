@@ -33,9 +33,9 @@ class DeferredTests: XCTestCase {
     func testPromiseResolve() {
         let deferred = Deferred<String>()
 
-        expectPromise(deferred) { str in
+        expectPromise(deferred, onFulfilled: { str in
             XCTAssert(str == "Right String", "Promise resolved with unexpected value")
-        }
+        })
 
         deferred.resolve("Right String")
 
@@ -58,9 +58,9 @@ class DeferredTests: XCTestCase {
     func testImmediateResolve() {
         let resolveWith = "Some String"
 
-        expectPromise(Deferred<String>(value: resolveWith)) { str in
+        expectPromise(Deferred<String>(value: resolveWith), onFulfilled: { str in
             XCTAssert(str == resolveWith, "Immediate Resolved Failed")
-        }
+        })
 
         waitForExpectationsWithTimeout(1, handler: nil)
     }
@@ -81,9 +81,9 @@ class DeferredTests: XCTestCase {
             return Deferred<String>(value: "Some String")
         }
 
-        expectPromise(Deferred.combine(promises)) { strings in
+        expectPromise(Deferred.combine(promises), onFulfilled: { strings in
             XCTAssert(strings.count == 5, "Combined Resolve Failed")
-        }
+        })
 
         waitForExpectationsWithTimeout(1, handler: nil)
     }
@@ -94,15 +94,15 @@ class DeferredTests: XCTestCase {
 
         let chained = promiseA.then({ i -> Deferred<Int> in
             return Deferred<Int>(value: i + 1)
-        }).then { i -> Int in
+        }).then({ i -> Int in
             return i + 1
-        }
+        })
 
         promiseA.resolve(1)
 
-        expectPromise(chained) { i in
+        expectPromise(chained, onFulfilled: { i in
             XCTAssert(i == 3, "Chain failed")
-        }
+        })
 
         waitForExpectationsWithTimeout(1, handler: nil)
     }
@@ -112,13 +112,13 @@ class DeferredTests: XCTestCase {
 
         let chained = promiseA.then({ i -> Deferred<Int> in
             return Deferred<Int>(value: i + 1)
-        }).then { i -> Int in
+        }).then({ i -> Int in
             return i + 1
-        }
+        })
 
-        expectPromise(chained) { i in
+        expectPromise(chained, onFulfilled: { i in
             XCTAssert(i == 3, "Chain failed")
-        }
+        })
 
         waitForExpectationsWithTimeout(1, handler: nil)
     }
@@ -129,9 +129,9 @@ class DeferredTests: XCTestCase {
 
         let chained = promiseA.then({ i -> Deferred<Int> in
             return Deferred<Int>(value: i + 1)
-        }).then { i -> Int in
+        }).then({ i -> Int in
             return i + 1
-        }
+        })
 
         promiseA.reject(NSError(domain: "Reject", code: 0, userInfo: nil))
 

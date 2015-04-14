@@ -50,13 +50,13 @@ public final class Deferred<T> {
         var collection = [T]()
 
         for deferred in promises {
-            deferred.then { value -> () in
+            deferred.then({ value -> Void in
                 collection += [value]
 
                 if collection.count == promises.count {
                     combined.resolve(collection)
                 }
-            }
+            })
         }
 
         return combined

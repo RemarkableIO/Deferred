@@ -402,6 +402,7 @@
 				5043D6511AA563CC00CCF599 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		5043D6521AA563CC00CCF599 /* Build configuration list for PBXNativeTarget "DeferredTests" */ = {
 			isa = XCConfigurationList;
@@ -410,6 +411,7 @@
 				5043D6541AA563CC00CCF599 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
