@@ -142,5 +142,20 @@ class DeferredTests: XCTestCase {
         waitForExpectationsWithTimeout(1, handler: nil)
     }
 
+    func testMultipleHandlers() {
+        let resolveWith = "Some string"
+        let resolvedPromise = Deferred<String>(value: resolveWith)
+
+        expectPromise(resolvedPromise, onFulfilled: { str in
+            XCTAssert(str == resolveWith, "")
+        })
+
+        expectPromise(resolvedPromise, onFulfilled: { str in
+            XCTAssert(str == resolveWith, "Double handler failed")
+        })
+
+        waitForExpectationsWithTimeout(1, handler: nil)
+    }
+
 
 }
