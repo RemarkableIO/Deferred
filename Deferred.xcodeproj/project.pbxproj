@@ -11,6 +11,7 @@
 		5043D6451AA563CC00CCF599 /* Deferred.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5043D6391AA563CC00CCF599 /* Deferred.framework */; };
 		5043D64C1AA563CC00CCF599 /* DeferredTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5043D64B1AA563CC00CCF599 /* DeferredTests.swift */; };
 		5043D6561AA563EA00CCF599 /* Deferred.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5043D6551AA563E900CCF599 /* Deferred.swift */; };
+		504E00061B3C8FD600F627A8 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504E00051B3C8FD600F627A8 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +32,7 @@
 		5043D64A1AA563CC00CCF599 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5043D64B1AA563CC00CCF599 /* DeferredTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeferredTests.swift; sourceTree = "<group>"; };
 		5043D6551AA563E900CCF599 /* Deferred.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deferred.swift; sourceTree = "<group>"; };
+		504E00051B3C8FD600F627A8 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +77,7 @@
 			children = (
 				5043D63E1AA563CC00CCF599 /* Deferred.h */,
 				5043D6551AA563E900CCF599 /* Deferred.swift */,
+				504E00051B3C8FD600F627A8 /* Extensions.swift */,
 				5043D63C1AA563CC00CCF599 /* Supporting Files */,
 			);
 			path = Deferred;
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5043D6561AA563EA00CCF599 /* Deferred.swift in Sources */,
+				504E00061B3C8FD600F627A8 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
