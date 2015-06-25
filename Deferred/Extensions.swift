@@ -8,9 +8,9 @@
 
 let NetworkQueue = dispatch_queue_create("com.gilesvangruisen.deferred.networkQueue", DISPATCH_QUEUE_SERIAL)
 
-extension NSData {
+public extension NSData {
 
-    class func deferred(url: NSURL?) -> Deferred<NSData> {
+    public class func deferred(url: NSURL?) -> Deferred<NSData> {
 
         let deferred = Deferred<NSData>()
 
@@ -40,9 +40,9 @@ extension NSData {
 
 }
 
-extension UIImage {
+public extension UIImage {
 
-    class func deferred(url: NSURL?) -> Deferred<UIImage> {
+    public class func deferred(url: NSURL?) -> Deferred<UIImage> {
 
         return NSData.deferred(url).then({ data -> Deferred<UIImage> in
 
