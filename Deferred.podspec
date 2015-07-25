@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = 'Deferred'
-  spec.version = '0.2.1'
+  spec.version = '0.2.2'
   spec.summary = 'Promises in Swift'
   spec.homepage = 'https://github.com/remarkableio/Deferred'
   spec.license = { :type => 'MIT', :file => 'LICENSE' }
