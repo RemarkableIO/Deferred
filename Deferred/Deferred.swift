@@ -95,32 +95,30 @@ public final class Deferred<T> {
 
     public func then<U>(onFulfilled: (T) -> Deferred<U>, _ onRejected: RejectedBlock = { error in }) -> Deferred<U> {
 
-        let temp = Deferred<U>()
+        // Proxy since we won't have a Deferred<U> until self resolves
+        let proxy = Deferred<U>()
 
+        // When self resolves, add then block to resulting Deferred<U>
         let _onFulfilled: T -> () = { value in
+
             let next = onFulfilled(value)
-            if let nextValue = next.value {
-                temp.resolve(nextValue)
-            } else if let nextError = next.error {
-                temp.reject(nextError)
-            } else {
-                temp.pending += next.pending
-            }
+
+            next.then({ value in
+                proxy.resolve(value)
+            }, { error in
+                proxy.reject(error)
+            })
+
         }
 
+        // When self rejects, reject proxy with error
         let _onRejected: NSError -> () = { error in
-            temp.reject(error)
+            proxy.reject(error)
         }
 
-        if let value = value {
-            _onFulfilled(value)
-        } else if let error = error {
-            _onRejected(error)
-        } else {
-            pending += [ThenBlock(onFulfilled: _onFulfilled, onRejected: _onRejected)]
-        }
+        then(_onFulfilled, _onRejected)
 
-        return temp
+        return proxy
     }
 
     /** Resolve the promise, clearing `pending` after calling each `onFulfilled` block with the given `value`. */
