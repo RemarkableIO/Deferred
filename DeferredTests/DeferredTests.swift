@@ -92,8 +92,18 @@ class DeferredTests: XCTestCase {
 
         let promiseA = Deferred<Int>()
 
+
         let chained = promiseA.then({ i -> Deferred<Int> in
-            return Deferred<Int>(value: i + 1)
+
+            let promiseB = Deferred<Int>()
+
+            let time = dispatch_time(DISPATCH_TIME_NOW, Int64(200 * Double(NSEC_PER_MSEC)))
+            dispatch_after(time, dispatch_get_main_queue()) {
+                promiseB.resolve(i + 1)
+            }
+
+            return promiseB
+
         }).then({ i -> Int in
             return i + 1
         })
@@ -106,6 +116,7 @@ class DeferredTests: XCTestCase {
 
         waitForExpectationsWithTimeout(1, handler: nil)
     }
+
     func testChainImmediateResolve() {
 
         let promiseA = Deferred<Int>(value: 1)
@@ -149,13 +160,12 @@ class DeferredTests: XCTestCase {
         expectPromise(resolvedPromise, onFulfilled: { str in
             XCTAssert(str == resolveWith, "")
         })
-
+        
         expectPromise(resolvedPromise, onFulfilled: { str in
             XCTAssert(str == resolveWith, "Double handler failed")
         })
-
+        
         waitForExpectationsWithTimeout(1, handler: nil)
     }
-
-
+    
 }
